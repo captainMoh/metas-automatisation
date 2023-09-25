@@ -1,11 +1,11 @@
 <?php
 
-include 'C:/wamp64/www/www.entreprise-nettoyage-91.fr/htdocs/routes.php';
+include 'C:/wamp64/www/www.paysagiste-91.fr/htdocs/routes.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
 require 'vendor/autoload.php';
 
 $excelFilePath = 'meta.xlsm';
-$cheminFilePhp = "C:/wamp64/www/www.entreprise-nettoyage-91.fr/htdocs/routes.php";
+$cheminFilePhp = "C:/wamp64/www/www.paysagiste-91.fr/htdocs/routes.php";
 $fichierRoutes = file_get_contents($cheminFilePhp);
 
 
@@ -25,6 +25,7 @@ function formatInfos(array $arrayExcel, array $arrayRoutes)
 {
     $counter = 0;
     $arrayUpdate = [];
+    $arrayLinkNotFound = [];
     foreach ($arrayExcel as $valueExcel) {
         if ($counter > 0) {
             if ($valueExcel[0] !== null) {
@@ -32,6 +33,7 @@ function formatInfos(array $arrayExcel, array $arrayRoutes)
                 $urlEnd = end($linkExploded);
 
                 $key = array_search($urlEnd, $arrayRoutes);
+                if(!$key) $arrayLinkNotFound[] = $valueExcel[0];
 
                 if (isset($arrayUpdate[$key])) {
                     $arrayUpdate[$key] = [
@@ -46,12 +48,12 @@ function formatInfos(array $arrayExcel, array $arrayRoutes)
         }
         $counter++;
     }
+    dump($arrayLinkNotFound);
     return $arrayUpdate;
 }
 
 function updateInfos($arrayToUpdate, $arrayWithUpdate)
 {
-    $arrayPageNotFound = [];
     foreach ($arrayWithUpdate as $key => $newValue) {
         if (array_key_exists($key, $arrayToUpdate)) {
             foreach ($newValue as $index => $newMeta) {
